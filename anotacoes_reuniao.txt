@@ -1,0 +1,19 @@
+Tp3
+
+Fazer API Rest pra ver estatisticas do trabalho Bridge Defense
+
+Servidor precisa ter 3 rotas
+	api/game/{id} -> retorna status do id informado
+	api/rank/sunk/ ... -> retorna ranking dos jogos com mais navios afundados dentro do limite estabelecido por query na requisicao
+		games: lista de ids
+	api/rank/escaped ... -> mesma coisa mas com ranking com jogos com menos navios que escaparam
+
+Cliente faz chamadas pro servidor
+	Achar GAS com melhor performance - GAS com mais jogos no top 100 de sunk (posso fazer pela media)
+		Salva em um arquivo csv
+	Achar melhor formacao de canhoes - acho top 100 jogos com menos navios escapados, computo media dos melhores posicionamentos dos canhoes
+		Tambem salvar em csv
+	CLIENTE NÂO PODE USAR LIB PRA FAZER REQ HTTP. Tem que usar soquete
+		Tem que fazer req na mão.
+
+Ponto extra -> interface + documentacao
