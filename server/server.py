@@ -1,10 +1,12 @@
 import json
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
+
 
 PATH_DB = '../data/scores.json'
+app = FastAPI()
 
 # Function to fix the JSON format of the database
-def transform_db_list_of_dicts():
+def transformDBToListfDicts():
     with open(PATH_DB, 'r') as file:
         content = file.read()
     
@@ -19,5 +21,22 @@ def transform_db_list_of_dicts():
     
     return list_of_dicts
 
-if __name__ == "__main__":
-    print(transform_db_list_of_dicts())
+DATA_FORMATTED = transformDBToListfDicts()
+
+@app.get("/api/game/{id}")
+def returnGameInfoByID(id: int , response: Response):
+    gameInfo : dict = {'game_id': 0, "game_stats": {}}
+
+    if (id < 0 or id > len(DATA_FORMATTED)):
+        response.status_code = 400
+        return {"Please, inform a valid game ID"}
+    
+    for game in DATA_FORMATTED:
+        print(game)
+        if (game['id'] == id):
+            gameInfo['game_id'] = id
+            gameInfo['game_stats'] = game
+            response.status_code = 200
+            return gameInfo
+
+
