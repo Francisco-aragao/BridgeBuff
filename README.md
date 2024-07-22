@@ -20,7 +20,7 @@ pip freeze > requirements.txt
 
 ### Init server -> Port 8000 by default
 
-```fastpi dev ./server/server.py```
+```fastapi dev ./server/server.py```
 
 ### Documentation
 

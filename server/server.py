@@ -43,7 +43,7 @@ def returnGameInfoByID(id: int , response: Response):
 
             return gameInfo
     
-# Route to return game status by the game ID informed
+# Route to return a page of games with the largest number of ships sunk
 @app.get("/api/rank/sunk")
 def returnPageOfGamesByTopSunkShips(limit: int, start:int, response: Response):
 
