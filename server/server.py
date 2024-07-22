@@ -6,8 +6,15 @@ app = FastAPI()
 
 # Function to fix the JSON format of the database
 def transformDBToListfDicts():
-    with open(PATH_DB, 'r') as file:
-        content = file.read()
+    try:
+        with open(PATH_DB, 'r') as file:
+            content = file.read()
+    except FileNotFoundError:
+        try:
+            with open('data/scores.json', 'r') as file:
+                content = file.read()
+        except FileNotFoundError:
+            raise FileNotFoundError("Database file not found in either path.")
     
     # Split the content into individual JSON objects
     json_objects = content.split('\n')
