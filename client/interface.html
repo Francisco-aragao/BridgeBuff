@@ -3,16 +3,33 @@
   <head>
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width,initial-scale=1" />
-      <title>🦜 Polyglot - Piratical PyScript</title>
-      <link rel="stylesheet" href="https://pyscript.net/releases/2024.7.1/core.css">
-      <script type="module" src="https://pyscript.net/releases/2024.7.1/core.js"></script>
+      <title>Teste</title>
   </head>
   <body>
-    <h1>Polyglot 🦜 💬 🇬🇧 ➡️ 🏴‍☠️</h1>
-    <p>Translate English into Pirate speak...</p>
-    <input type="text" id="english" placeholder="Type English here..." />
-    <button py-click="translate_english">Translate</button>
+    <h1>Cliente BridgeBuff</h1>
+    <input type="text" id="immortals" placeholder="Info about top 100 games" />
+    <button onclick="immortals()">Translate</button>
     <div id="output"></div>
-    <script type="py" src="./client.py" config="./pyscript.json"></script>
+
+    <script>
+      async function immortals() {
+        const englishInput = document.getElementById('immortals').value;
+
+        const requestBody = englishInput;
+
+        console.log("info" , requestBody)
+
+        const response = await fetch('/my_function', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Content-Lenght': requestBody.length.toString(),
+          },
+          body: JSON.stringify({ message: englishInput })
+        });
+        const result = await response.json();
+        document.getElementById('output').innerText = result.message;
+      }
+    </script>
   </body>
 </html>

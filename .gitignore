@@ -1,2 +1,3 @@
 env_py/
 server/__pycache__/
+client/__pycache__/
