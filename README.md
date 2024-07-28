@@ -29,3 +29,9 @@ Docs are generated automatically by FastApi, just need to run ```localhost:8000/
 ### Make requests
 
 Typing in the browser ```localhost:8000/api/<path_to_the_route>```
+
+## Client
+
+### Run best performance analysis
+
+```python3 ./client/client.py 127.0.0.1 8000 1 output.csv```
