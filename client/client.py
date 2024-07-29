@@ -2,18 +2,40 @@ import socket
 import json
 import csv
 import sys
+import logging
+
+BUF_SIZE = 4096  # Buffer size for server response.
+TIMEOUT_SEC = 0.2  # Timeout in seconds when sending/receiving data.
+MAX_ATTEMPTS = 8  # Max retransmission attempts when no data is received.
 
 # Function to send an HTTP request and receive the response
 def send_request(sock, request):
-    print("request:", request)
-    sock.sendall(request.encode())  # Send the request to the server
-    response = b''
-    while True:
-        data = sock.recv(4096)  # Receive the response data in chunks
-        if not data:
-            break
-        response += data
-    return response.decode()
+    attempts: int = MAX_ATTEMPTS
+    sock.settimeout(TIMEOUT_SEC)
+    while attempts:
+        res: bytes = bytes()
+
+        try:
+            sock.sendall(request.encode())  # Send the request to the server
+
+            # Try to receive as much data as possible until a timeout occurs
+            while True:
+                chunk: bytes = sock.recv(BUF_SIZE)
+                res += chunk
+
+        except socket.timeout:
+            logging.debug(
+                f"Socket connected to {sock.getsockname()}, received {len(res)} bytes in total"
+            )
+
+            if len(res) > 0:
+                logging.debug(res.decode("utf-8"))
+                return res.decode()
+
+        except OSError as msg:
+            logging.error(
+                f"Socket connected to {sock.getsockname()}, could not send and/or receive data. {msg}"
+            )
 
 # Function to get paginated data from the server
 def get_paginated_data(sock, endpoint, max=50):
