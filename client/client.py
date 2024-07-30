@@ -85,7 +85,7 @@ def analyze_gas_best_performance(sock, output_file):
     for game_id in top100_games:
         game_info = get_game_info(sock, game_id)
         if game_info:
-            gas = game_info["game_stats"].get("gas")
+            gas = game_info["game_stats"].get("auth")
             sunk_ships = game_info["game_stats"].get("sunk_ships", 0)
 
             if gas not in gas_performance:
@@ -93,6 +93,8 @@ def analyze_gas_best_performance(sock, output_file):
 
             gas_performance[gas]["count"] += 1
             gas_performance[gas]["total_sunk"] += sunk_ships
+
+    print("gas performance: ", gas_performance)
 
     # Create a CSV file for GAS performance without headers
     with open(output_file, "w", newline="") as csvfile:
@@ -104,11 +106,24 @@ def analyze_gas_best_performance(sock, output_file):
 
 # Function to normalize cannon placement into an 8-digit string
 def normalize_cannon_placement(cannon_placement):
-    normalized = [0] * 8
+    # Step 1: Count the number of cannons in each row
+    row_counts = [0] * 5 
+    
     for placement in cannon_placement:
-        if 0 <= placement < 8:
-            normalized[placement] += 1
-    return "".join(map(str, normalized))
+        row = placement[1] 
+        row_counts[row] += 1
+    
+    # Step 2: Count the number of rows with exactly i cannons
+    cannon_counts = [0] * 8  
+
+    for count in row_counts:
+        if count < 8:
+            cannon_counts[count] += 1
+    
+    # Step 3: Construct the 8-digit string
+    normalized_string = ''.join(map(str, cannon_counts))
+    
+    return normalized_string
 
 # Function to analyze the best cannon placements and generate a CSV file
 def analyze_best_cannon_placements(sock, output_file):
@@ -118,7 +133,7 @@ def analyze_best_cannon_placements(sock, output_file):
     for game_id in top100_games:
         game_info = get_game_info(sock, game_id)
         if game_info:
-            cannon_placement = game_info["game_stats"].get("cannon_placement", [])
+            cannon_placement = game_info["game_stats"].get("cannons", [])
             escaped_ships = game_info["game_stats"].get("escaped_ships", 0)
             normalized_placement = normalize_cannon_placement(cannon_placement)
 
@@ -127,6 +142,8 @@ def analyze_best_cannon_placements(sock, output_file):
 
             cannon_placements[normalized_placement]["count"] += 1
             cannon_placements[normalized_placement]["total_escaped"] += escaped_ships
+
+    print(cannon_placements)
 
     # Create a CSV file for cannon placements without headers
     with open(output_file, "w", newline="") as csvfile:
