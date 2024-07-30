@@ -7,6 +7,7 @@ import logging
 BUF_SIZE = 4096  # Buffer size for server response.
 TIMEOUT_SEC = 0.2  # Timeout in seconds when sending/receiving data.
 MAX_ATTEMPTS = 8  # Max retransmission attempts when no data is received.
+RANKING_RANGE = 100  # Number of games to analyze for ranking.
 
 # Function to send an HTTP request and receive the response
 def send_request(sock, request):
@@ -38,11 +39,12 @@ def send_request(sock, request):
             )
 
 # Function to get paginated data from the server
-def get_paginated_data(sock, endpoint, max=50):
+def get_paginated_data(sock, endpoint, max=RANKING_RANGE):
     start = 0
     all_data = []
-    limit = 50  # Setting the initial limit to 50, as required
-    while limit <= max:
+    limit = 50  # Setting the initial limit to 50
+    end = limit
+    while end <= max:
         # Constructing the HTTP GET request
         request = f"GET {endpoint}?limit={limit}&start={start} HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"
         
@@ -64,9 +66,7 @@ def get_paginated_data(sock, endpoint, max=50):
         
         # Updating the start index for the next request
         start += limit
-        
-        # Incrementing the limit to stay within the maximum allowed items
-        limit += 50
+        end += limit
     return all_data
 
 
@@ -173,3 +173,5 @@ if __name__ == "__main__":
         else:
             print("Invalid analysis option. Use 1 or 2.")
             sys.exit(1)
+
+    print(f"Analysis completed. Results saved to {OUTPUT_FILE}")
