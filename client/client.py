@@ -74,7 +74,6 @@ def get_paginated_data(sock, endpoint, max=50):
 def get_game_info(sock, game_id):
     request = f"GET /api/game/{game_id} HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"
     response = send_request(sock, request)
-    print("response:", response)
     body = response.split('\r\n\r\n')[1]
     return json.loads(body)
 
