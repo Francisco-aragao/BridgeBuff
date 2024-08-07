@@ -32,8 +32,16 @@ Typing in the browser ```localhost:8000/api/<path_to_the_route>```
 
 ## Client
 
-### Run best performance analysis
+Important: The file will be stored in the path ```../output_data/<output_file>```, so the <outputfile> is just the filename, not a path. The client needs to be executed inside the folder 'client' too.
 
-```python3 ./client/client.py 127.0.0.1 8000 1 output.csv```
+### Run best performance analysis in terminal
 
-### Run best cannon placement analysis
+```python3 client.py <ip> <port> 1 <output_file>```
+
+### Run best cannon placement analysis in terminal
+
+```python3 client.py <ip> <port> 2 <output_file>```
+
+### Run Client in web
+
+uvicorn front:app --reload --port <port_number>

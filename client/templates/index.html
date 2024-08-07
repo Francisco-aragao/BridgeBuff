@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Game Analysis</title>
+    <style>
+        body {
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            text-align: center;
+            width: 300px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            margin-top: 15px;
+        }
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BridgeBuff - Analytics for BridgeDefense Game</h1>
+        <form action="/sendParametersToBridgeBuffClient" method="post">
+            <label for="ip">Server IP:</label>
+            <input type="text" id="ip" name="ip">
+            <label for="port">Port:</label>
+            <input type="number" id="port" name="port">
+            <label for="analysis">Analysis Type:</label>
+            <select id="analysis" name="analysis">
+                <option value="1">GAS Performance</option>
+                <option value="2">Cannon Placements</option>
+            </select>
+            <label for="output">Output File: (stored in ../output_data/filename)</label>
+            <input type="text" id="output" name="output">
+            <input type="submit" value="Analyze">
+        </form>
+    </div>
+</body>
+</html>

@@ -1,3 +1,4 @@
+import os
 import socket
 import json
 import csv
@@ -93,16 +94,20 @@ def analyze_gas_best_performance(sock, output_file):
 
             gas_performance[gas]["count"] += 1
             gas_performance[gas]["total_sunk"] += sunk_ships
-
-    print("gas performance: ", gas_performance)
+    
+    sorted_gas_performance = sorted(
+        ((gas, stats["count"], stats["total_sunk"] / stats["count"])
+        for gas, stats in gas_performance.items()),
+        key=lambda x: x[1],
+        reverse=True
+    )
 
     # Create a CSV file for GAS performance without headers
     with open(output_file, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
-        sorted_gas = sorted(gas_performance.items(), key=lambda x: x[1]["count"], reverse=True)
-        for gas, stats in sorted_gas:
-            average_sunk = stats["total_sunk"] / stats["count"]
-            writer.writerow([gas, stats["count"], average_sunk])
+        writer.writerows(sorted_gas_performance)
+    
+    return sorted_gas_performance
 
 # Function to normalize cannon placement into an 8-digit string
 def normalize_cannon_placement(cannon_placement):
@@ -143,15 +148,18 @@ def analyze_best_cannon_placements(sock, output_file):
             cannon_placements[normalized_placement]["count"] += 1
             cannon_placements[normalized_placement]["total_escaped"] += escaped_ships
 
-    print(cannon_placements)
+    sorted_placements = sorted(
+        ((placement, stats["total_escaped"] / stats["count"])
+        for placement, stats in cannon_placements.items()),
+        key=lambda x: x[1]
+    )
 
     # Create a CSV file for cannon placements without headers
     with open(output_file, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
-        sorted_placements = sorted(cannon_placements.items(), key=lambda x: x[1]["total_escaped"] / x[1]["count"])
-        for placement, stats in sorted_placements:
-            average_escaped = stats["total_escaped"] / stats["count"]
-            writer.writerow([placement, average_escaped])
+        writer.writerows(sorted_placements)
+    
+    return sorted_placements
 
 if __name__ == "__main__":
     if len(sys.argv) != 5:
@@ -161,8 +169,8 @@ if __name__ == "__main__":
     IP = sys.argv[1]
     PORT = int(sys.argv[2])
     ANALYSIS = int(sys.argv[3])
-    OUTPUT_FILE = sys.argv[4]
-
+    OUTPUT_FILE = os.path.join('..', 'output_data', sys.argv[4]) # Output file path
+ 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.connect((IP, PORT))
         
