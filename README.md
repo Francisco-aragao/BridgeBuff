@@ -46,6 +46,6 @@ Important again: The csv file will be stored in the path ```../output_data/<outp
 
 ```python3 client.py <ip> <port> 2 <output_file>```
 
-### Run Client in web
+### Run Client in web -> inside the client folder
 
 ```uvicorn front:app --reload --port <port_number>```

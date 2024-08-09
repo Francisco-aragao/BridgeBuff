@@ -14,6 +14,7 @@ httpcore
 httptools
 httpx
 idna
+importlib-metadata
 itsdangerous
 Jinja2
 markdown-it-py
@@ -41,3 +42,4 @@ uvloop
 watchfiles
 websockets
 Werkzeug
+zipp
