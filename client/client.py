@@ -10,10 +10,44 @@ TIMEOUT_SEC = 0.2  # Timeout in seconds when sending/receiving data.
 MAX_ATTEMPTS = 8  # Max retransmission attempts when no data is received.
 RANKING_RANGE = 100  # Number of games to analyze for ranking.
 
+def extract_html_headers_and_body(response: bytes) -> dict[str, str] | None:
+    # Get raw content length from remaining bytes
+    content_length_bytes = len(response.split(b"\r\n\r\n", 1)[1])
+
+    # Decode and split the response into headers and body
+    headers, body = response.decode().split("\r\n\r\n", 1)
+
+    # Initialize the result dict
+    result = dict()
+
+    # Get header lines and build a dict with key: value pairs
+    header_lines = headers.split("\r\n")
+
+    # First line is the status line
+    result["status"] = header_lines[0]
+
+    # Remaining lines are headers
+    for line in header_lines[1:]:
+        key, value = line.split(": ", 1)
+        result[key] = value
+
+    # Check content length and body length match
+    if "content-length".casefold() in result:
+        if int(result["content-length"]) != content_length_bytes:
+            logging.warning("Content length mismatch")
+
+            return None
+
+    # Valid response, add the body to the result dict
+    result["body"] = body
+
+    return result
+
 # Function to send an HTTP request and receive the response
-def send_request(sock, request):
+def send_request(sock, request) -> dict[str, str]:
     attempts: int = MAX_ATTEMPTS
     sock.settimeout(TIMEOUT_SEC)
+
     while attempts:
         res: bytes = bytes()
 
@@ -32,12 +66,25 @@ def send_request(sock, request):
 
             if len(res) > 0:
                 logging.debug(res.decode("utf-8"))
-                return res.decode()
+
+                # If response is mismatched (e.g.: wrong content-length), retry the request
+                resDict = extract_html_headers_and_body(res)
+
+                if resDict is None:
+                    logging.warning("Retrying request due to content length mismatch")
+                    attempts -= 1
+                    continue
+
+                # Return the response as a dictionary
+                return resDict
 
         except OSError as msg:
             logging.error(
                 f"Socket connected to {sock.getsockname()}, could not send and/or receive data. {msg}"
             )
+
+    # Empty response if no data is received
+    return dict()
 
 # Function to get paginated data from the server
 def get_paginated_data(sock, endpoint, max=RANKING_RANGE):
@@ -52,11 +99,8 @@ def get_paginated_data(sock, endpoint, max=RANKING_RANGE):
         # Sending the request and receiving the response
         response = send_request(sock, request)
         
-        # Splitting the response to separate headers from the body
-        body = response.split('\r\n\r\n')
-
         # Parsing the body as JSON and extracting the "games" data
-        data = json.loads(body[1]).get("games", [])
+        data = json.loads(response["body"]).get("games", [])
         
         # If no more data is received, exit the loop
         if not data:
@@ -68,15 +112,15 @@ def get_paginated_data(sock, endpoint, max=RANKING_RANGE):
         # Updating the start index for the next request
         start += limit
         end += limit
-    return all_data
 
+    return all_data
 
 # Function to get game information by game ID
 def get_game_info(sock, game_id):
     request = f"GET /api/game/{game_id} HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"
     response = send_request(sock, request)
-    body = response.split('\r\n\r\n')[1]
-    return json.loads(body)
+
+    return json.loads(response["body"])
 
 # Function to analyze GAS with the best performance and generate a CSV file
 def analyze_gas_best_performance(sock, output_file):
@@ -169,7 +213,7 @@ if __name__ == "__main__":
     IP = sys.argv[1]
     PORT = int(sys.argv[2])
     ANALYSIS = int(sys.argv[3])
-    OUTPUT_FILE = os.path.join('..', 'output_data', sys.argv[4]) # Output file path
+    OUTPUT_FILE = os.path.join(os.path.abspath(os.path.curdir), sys.argv[4]) # Output file path
  
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.connect((IP, PORT))
