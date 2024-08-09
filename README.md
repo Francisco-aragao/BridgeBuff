@@ -12,7 +12,7 @@ source env_py/bin/activate
 
 pip install -r requirements.txt
 
-## Update requirements
+## Update requirements with new packages installed
 
 pip freeze > requirements.txt
 
@@ -26,13 +26,17 @@ pip freeze > requirements.txt
 
 Docs are generated automatically by FastApi, just need to run ```localhost:8000/docs``` in the browser after running the server
 
-### Make requests
+Another documentation was prepared with more information and could be accessed in [Documentation](https://documenter.getpostman.com/view/23407195/2sA3rzLsv8) 
+
+### Make requests to server
 
 Typing in the browser ```localhost:8000/api/<path_to_the_route>```
 
 ## Client
 
-Important: The file will be stored in the path ```../output_data/<output_file>```, so the <outputfile> is just the filename, not a path. The client needs to be executed inside the folder 'client' too.
+Important: To run the client, it is necessary to be inside the folder 'client' and the server must be running.
+
+Important again: The csv file will be stored in the path ```../output_data/<output_file>```, so the <outputfile> is just the filename, not a path. The client needs to be executed inside the folder 'client' too.
 
 ### Run best performance analysis in terminal
 
@@ -44,4 +48,4 @@ Important: The file will be stored in the path ```../output_data/<output_file>``
 
 ### Run Client in web
 
-uvicorn front:app --reload --port <port_number>
+```uvicorn front:app --reload --port <port_number>```
