@@ -36,7 +36,7 @@ Typing in the browser ```localhost:8000/api/<path_to_the_route>```
 
 Important: To run the client, it is necessary to be inside the folder 'client' and the server must be running.
 
-Important again: The csv file will be stored in the path ```../output_data/<output_file>```, so the <outputfile> is just the filename, not a path. The client needs to be executed inside the folder 'client' too.
+Important again: The csv file will be stored in the root folder, so the <outputfile> is just the filename, not a path. The client needs to be executed inside the folder 'client' too.
 
 ### Run best performance analysis in terminal
 
