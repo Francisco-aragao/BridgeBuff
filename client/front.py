@@ -31,7 +31,7 @@ async def analyze(request: Request):
     port = int(form.get('port'))
     analysis_type = form.get('analysis')
     output_file = form.get('output')
-    output_file = os.path.join('..', 'output_data', output_file) # Output file path
+    output_file = os.path.join(os.path.abspath(os.path.curdir), '..', output_file) # Output file path
 
     # Connect to the client functions (running fastpi) and perform the analysis
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
